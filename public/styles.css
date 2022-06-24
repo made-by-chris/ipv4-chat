@@ -47,11 +47,20 @@ form {
   display: flex;
   height: 3rem;
   box-sizing: border-box;
-}
-
-form {
   border-radius: 2rem;
   margin: 15px;
+}
+
+@media (max-width: 728px) {
+  form {
+    border-radius: 0;
+    margin: 0;
+    height: 8rem;
+    flex-direction: column;
+  }
+  #bug_name {
+    flex-grow: 1;
+  }
 }
 
 form button {
@@ -65,6 +74,13 @@ form button {
   display: none;
 }
 
+#bug_name {
+  border: none;
+  padding: 0 1rem;
+  border-radius: 2rem;
+  margin: 0.25rem;
+}
+
 #message {
   border: none;
   padding: 0 1rem;
@@ -76,13 +92,6 @@ form button {
 #message:focus,
 #bug_name:focus {
   outline: none;
-}
-
-#bug_name {
-  border: none;
-  padding: 0 1rem;
-  border-radius: 2rem;
-  margin: 0.25rem;
 }
 
 #messages {
