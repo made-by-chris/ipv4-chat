@@ -1,0 +1,93 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    position: fixed;
+    margin-top: 10px;
+    text-align: center;
+    width: 100vw;
+}
+
+#form {
+    background: hsl(208, 100%, 50%);
+    padding: 0.25rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    height: 3rem;
+    box-sizing: border-box;
+}
+
+#message {
+    border: none;
+    padding: 0 1rem;
+    flex-grow: 1;
+    border-radius: 2rem;
+    margin: 0.25rem;
+}
+
+#message:focus,
+#bug_name:focus {
+    outline: none;
+}
+
+#bug_name {
+    border: none;
+    padding: 0 1rem;
+    border-radius: 2rem;
+    margin: 0.25rem;
+}
+
+#form {
+    border-radius: 2rem;
+    margin: 15px;
+}
+
+#form>button {
+    background: hsl(56, 100%, 50%);
+    border: none;
+    padding: 0 1rem;
+    margin: 0.25rem;
+    width: 0;
+    border-radius: 3px;
+    outline: none;
+    border-radius: 2rem;
+}
+
+#messages {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    margin: 0;
+    margin-bottom: 100px;
+    padding: 0;
+    top: 30px;
+    bottom: 30px
+}
+
+#messages>li {
+    display: block;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 1rem;
+    color: #919191;
+    align-self: flex-start;
+    border-radius: 2rem;
+    background: hsl(157, 100%, 50%)
+}
+
+#messages>li.me {
+    align-self: flex-end;
+    background: #fffe00
+}
+
+.msg-contents {
+    color: black;
+}
+
+.msg-author {
+    color: white;
+}

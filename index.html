@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>bug.chat</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐞</text></svg>">
+</head>
+
+<body>
+  <h1>🐞</h1>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="bug_name" name="bug_name" autocomplete="off" />
+    <input id="message" name="message" autocomplete="off" autofocus />
+    <button>▶</button>
+  </form>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    (async () => {
+
+      const bug_name = document.getElementById('bug_name')
+      const messages = document.getElementById('messages');
+      const form = document.getElementById('form');
+      const input = document.getElementById('message');
+
+
+      // assign default name
+      const default_names = ["🪲", "🦗", "🐝", "🦗", "🐛", "🪱", "🐌", "🐞", "🐜", "🦟", "🦋", "🪳", "🪰", "🦎", "🐀", "🐁", "𓆨",]
+      if (localStorage.getItem("bug_name")) {
+        bug_name.value = localStorage.getItem("bug_name")
+      } else {
+        const default_name = default_names[Math.floor(Math.random() * default_names.length)]
+        bug_name.value = default_name
+        localStorage.setItem("bug_name", default_name)
+      }
+      bug_name.addEventListener("keyup", e => localStorage.setItem("bug_name", e.target.value))
+
+      // get current IP 
+      let group;
+      const updateIP = async () => fetch("https://ipv4.ident.me").then(r => r.text()).then(r => group = r)
+      setInterval(updateIP, 60000)
+      await updateIP()
+
+      const socket = io();
+      socket.on('connect', function () {
+        // Send ehlo event right after connect:
+        socket.emit('group', group);
+        console.log('group', group);
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit("bzzz", {
+            group,
+            bug_name: bug_name.value,
+            msg: input.value,
+            date: Date.now(),
+          });
+          _msg = `<li class="me">
+          <span class="msg-contents"> ${input.value} </span>
+        </li>`
+          messages.innerHTML += _msg;
+          window.scrollTo(0, document.body.scrollHeight);
+          input.value = '';
+        }
+      });
+
+      socket.on(group, function ({
+        bug_name,
+        msg,
+      }) {
+        _msg = `<li>
+          <span class="msg-author"> ${bug_name} </span>
+          <span class="msg-contents"> ${msg} </span>
+        </li>`
+        messages.innerHTML += _msg;
+        window.scrollTo(0, document.body.scrollHeight);
+        if (!document.visibilityState === 'visible') {
+          notify(bug_name + ": " + msg)
+        }
+      });
+
+      function notify(msg) {
+        if (Notification?.permission === "granted") {
+          var notification = new Notification(msg);
+        }
+        else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+              var notification = new Notification(msg);
+            }
+          });
+        }
+      }
+    })()
+
+  </script>
+</body>
+
+</html>
