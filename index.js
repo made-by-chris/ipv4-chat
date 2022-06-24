@@ -10,6 +10,7 @@ app.get("/", (req, res) => {
 
 io.on("connection", (client) => {
   client.on("group", function (new_room) {
+    console.log({ new_room });
     client.leave(client.room);
     client.join(new_room);
     client.room = new_room;

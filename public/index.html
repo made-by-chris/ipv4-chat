@@ -96,6 +96,7 @@
             .then((r) => {
               group = r;
               group_name.innerText = group;
+              socket?.emit("group", group);
             });
         setInterval(updateIP, 60000);
         await updateIP();
