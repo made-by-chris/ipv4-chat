@@ -13,18 +13,16 @@ io.on("connection", (client) => {
   const rm =
     client.handshake.headers["x-forwarded-for"] ||
     client.handshake.address.address;
-  // client.on("group", function (new_room) {
-  //   console.log({ new_room });
-  //   client.leave(client.room);
-  //   client.join(new_room);
-  //   client.room = new_room;
-  // });
-  client.leave(client.room);
-  client.join(rm);
-  client.room = rm;
+
+  client.on("room", (r) => {
+    client.leave(client.room);
+    client.join(r);
+    client.room = r;
+    console.log(`xconnection from ${r}`);
+  });
   console.log(`connection from ${rm}`);
   client.on("bzzz", (msg) => {
-    client.broadcast.emit(client.room, msg);
+    client.broadcast.emit(client.room, { ...msg });
   });
 });
 

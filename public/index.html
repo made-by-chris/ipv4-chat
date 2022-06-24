@@ -21,7 +21,7 @@
         </p>
         <span class="gray">
           (no sign up - no logs)<br />
-          your wifi group: <span id="group_name">01.234.567.89</span>
+          your wifi room: <span id="room_name">01.234.567.89</span>
           <br />
         </span>
       </div>
@@ -55,7 +55,7 @@
       };
 
       (async () => {
-        const group_name = document.getElementById("group_name");
+        const room_name = document.getElementById("room_name");
         const bug_name = document.getElementById("bug_name");
         const messages = document.getElementById("messages");
         const form = document.getElementById("form");
@@ -89,28 +89,30 @@
         );
 
         // get current IP
-        // let group;
-        // const updateIP = async () =>
-        //   fetch("https://ipv4.ident.me")
-        //     .then((r) => r.text())
-        //     .then((r) => {
-        //       group = r;
-        //       group_name.innerText = group;
-        //       socket?.emit("group", group);
-        //     });
-        // setInterval(updateIP, 60000);
-        // await updateIP();
+        let room;
+        const updateIP = async () => {
+          fetch("https://ipv4.ident.me")
+            .then((r) => r.text())
+            .then((r) => {
+              room = r;
+              room_name.innerText = room;
+              socket?.emit("room", room);
+              alert(JSON.stringify(r));
+            })
+            .catch((error) => alert(error));
+        };
+        setInterval(updateIP, 60000);
+        await updateIP();
 
         const socket = io();
-        // socket.on("connect", function () {
-        //   socket.emit("group", group);
-        // });
+        socket.on("connect", function () {
+          socket.emit("room", room);
+        });
 
         form.addEventListener("submit", function (e) {
           e.preventDefault();
           if (input.value) {
             socket.emit("bzzz", {
-              // group,
               bug_name: bug_name.value,
               msg: input.value,
               date: Date.now(),
@@ -124,7 +126,7 @@
           }
         });
 
-        socket.on(group, function ({ bug_name, msg }) {
+        socket.on(room, function ({ bug_name, msg }) {
           _msg = `<li>
           <span class="msg-author"> ${bug_name} </span>
           <span class="msg-contents"> ${msg} </span>
