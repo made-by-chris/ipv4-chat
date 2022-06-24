@@ -89,28 +89,28 @@
         );
 
         // get current IP
-        let group;
-        const updateIP = async () =>
-          fetch("https://ipv4.ident.me")
-            .then((r) => r.text())
-            .then((r) => {
-              group = r;
-              group_name.innerText = group;
-              socket?.emit("group", group);
-            });
-        setInterval(updateIP, 60000);
-        await updateIP();
+        // let group;
+        // const updateIP = async () =>
+        //   fetch("https://ipv4.ident.me")
+        //     .then((r) => r.text())
+        //     .then((r) => {
+        //       group = r;
+        //       group_name.innerText = group;
+        //       socket?.emit("group", group);
+        //     });
+        // setInterval(updateIP, 60000);
+        // await updateIP();
 
         const socket = io();
-        socket.on("connect", function () {
-          socket.emit("group", group);
-        });
+        // socket.on("connect", function () {
+        //   socket.emit("group", group);
+        // });
 
         form.addEventListener("submit", function (e) {
           e.preventDefault();
           if (input.value) {
             socket.emit("bzzz", {
-              group,
+              // group,
               bug_name: bug_name.value,
               msg: input.value,
               date: Date.now(),

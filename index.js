@@ -5,17 +5,24 @@ const io = require("socket.io")(http);
 const port = process.env.PORT || 3000;
 app.use(express.static("public"));
 app.get("/", (req, res) => {
+  var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
   res.sendFile(__dirname + "/public/index.html");
 });
 
 io.on("connection", (client) => {
-  client.on("group", function (new_room) {
-    console.log({ new_room });
-    client.leave(client.room);
-    client.join(new_room);
-    client.room = new_room;
-  });
-
+  const rm =
+    client.handshake.headers["x-forwarded-for"] ||
+    client.handshake.address.address;
+  // client.on("group", function (new_room) {
+  //   console.log({ new_room });
+  //   client.leave(client.room);
+  //   client.join(new_room);
+  //   client.room = new_room;
+  // });
+  client.leave(client.room);
+  client.join(rm);
+  client.room = rm;
+  console.log(`connection from ${rm}`);
   client.on("bzzz", (msg) => {
     client.broadcast.emit(client.room, msg);
   });
