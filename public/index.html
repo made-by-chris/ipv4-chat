@@ -41,61 +41,62 @@
       });
     };
 
-    (async () => {
-      const room_name = document.getElementById("room_name");
-      const bug_name = document.getElementById("bug_name");
-      const messages = document.getElementById("messages");
-      const form = document.getElementById("form");
-      const input = document.getElementById("message");
 
-      // assign default name
-      const default_names = [
-        "🦗",
-        "🐝",
-        "🦗",
-        "🐛",
-        "🐌",
-        "🐞",
-        "🐜",
-        "🦟",
-        "🦋",
-        "🦎",
-        "🐀",
-        "🐁",
-      ];
-      if (localStorage.getItem("bug_name")) {
-        bug_name.value = localStorage.getItem("bug_name");
-      } else {
-        const default_name =
-          default_names[Math.floor(Math.random() * default_names.length)];
-        bug_name.value = default_name;
-        localStorage.setItem("bug_name", default_name);
+    const room_name = document.getElementById("room_name");
+    const bug_name = document.getElementById("bug_name");
+    const messages = document.getElementById("messages");
+    const form = document.getElementById("form");
+    const input = document.getElementById("message");
+
+    // assign default name
+    const default_names = [
+      "🦗",
+      "🐝",
+      "🦗",
+      "🐛",
+      "🐌",
+      "🐞",
+      "🐜",
+      "🦟",
+      "🦋",
+      "🦎",
+      "🐀",
+      "🐁",
+    ];
+    if (localStorage.getItem("bug_name")) {
+      bug_name.value = localStorage.getItem("bug_name");
+    } else {
+      const default_name =
+        default_names[Math.floor(Math.random() * default_names.length)];
+      bug_name.value = default_name;
+      localStorage.setItem("bug_name", default_name);
+    }
+    bug_name.addEventListener("keyup", (e) =>
+      localStorage.setItem("bug_name", e.target.value)
+    );
+
+    // get current IP
+    let room;
+    let socket;
+    const updateIP = async () => {
+      try {
+        fetch("https://ipv4.ident.me")
+          .then((r) => r.text())
+          .then((r) => {
+            room = r;
+            room_name.innerText = room;
+            socket?.emit("room", room);
+            room_name.innerText = JSON.stringify(r);
+          })
+          .catch((error) => room_name.innerText = error);
+      } catch (error) {
+        room_name.innerText = error
       }
-      bug_name.addEventListener("keyup", (e) =>
-        localStorage.setItem("bug_name", e.target.value)
-      );
+    };
+    setInterval(updateIP, 60000);
+    updateIP().then(_ => {
 
-      // get current IP
-      let room;
-      const updateIP = async () => {
-        try {
-          fetch("https://ipv4.ident.me")
-            .then((r) => r.text())
-            .then((r) => {
-              room = r;
-              room_name.innerText = room;
-              socket?.emit("room", room);
-              room_name.innerText = JSON.stringify(r);
-            })
-            .catch((error) => room_name.innerText = error);
-        } catch (error) {
-          room_name.innerText = error
-        }
-      };
-      setInterval(updateIP, 60000);
-      await updateIP();
-
-      const socket = io();
+      socket = io();
       socket.on("connect", function () {
         socket.emit("room", room);
       });
@@ -156,7 +157,10 @@
         );
       }
       welcomeNotification();
-    })();
+    });
+
+
+
   </script>
 </body>
 
