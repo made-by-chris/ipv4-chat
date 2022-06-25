@@ -1,171 +1,159 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>bug.chat</title>
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐞</text></svg>"
-    />
-  </head>
+<head>
+  <title>bug.chat</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <body>
-    <nav>
-      <div>
-        <p class="b1">bug 🐞 chat</p>
-        <p class="b2">
-          simple chat for everyone<br />
-          on the same wifi
-        </p>
-        <span class="gray">
-          (no sign up - no logs)<br />
-          your wifi room: <span id="room_name">01.234.567.89</span>
-          <br />
-        </span>
-      </div>
-    </nav>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input
-        type="text"
-        placeholder="name"
-        id="bug_name"
-        name="bug_name"
-        autocomplete="off"
-      />
-      <input
-        type="text"
-        id="message"
-        name="message"
-        autocomplete="off"
-        autofocus
-      />
-      <button>▶</button>
-    </form>
-    <script src="/socket.io/socket.io.js"></script>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐞</text></svg>" />
+</head>
 
-    <script>
-      const urlify = (text) => {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, (url) => {
-          return `<a target="blank" href="${url}">${url}</a>`;
-        });
+<body>
+  <nav>
+    <div>
+      <p class="b1">bug 🐞 chat</p>
+      <p class="b2">
+        simple chat for everyone<br />
+        on the same wifi
+      </p>
+      <span class="gray">
+        (no sign up - no logs)<br />
+        your wifi room: <span id="room_name">01.234.567.89</span>
+        <br />
+      </span>
+    </div>
+  </nav>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input type="text" placeholder="name" id="bug_name" name="bug_name" autocomplete="off" />
+    <input type="text" id="message" name="message" autocomplete="off" autofocus />
+    <button>▶</button>
+  </form>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    const urlify = (text) => {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, (url) => {
+        return `<a target="blank" href="${url}">${url}</a>`;
+      });
+    };
+
+    (async () => {
+      const room_name = document.getElementById("room_name");
+      const bug_name = document.getElementById("bug_name");
+      const messages = document.getElementById("messages");
+      const form = document.getElementById("form");
+      const input = document.getElementById("message");
+
+      // assign default name
+      const default_names = [
+        "🦗",
+        "🐝",
+        "🦗",
+        "🐛",
+        "🐌",
+        "🐞",
+        "🐜",
+        "🦟",
+        "🦋",
+        "🦎",
+        "🐀",
+        "🐁",
+      ];
+      if (localStorage.getItem("bug_name")) {
+        bug_name.value = localStorage.getItem("bug_name");
+      } else {
+        const default_name =
+          default_names[Math.floor(Math.random() * default_names.length)];
+        bug_name.value = default_name;
+        localStorage.setItem("bug_name", default_name);
+      }
+      bug_name.addEventListener("keyup", (e) =>
+        localStorage.setItem("bug_name", e.target.value)
+      );
+
+      // get current IP
+      let room;
+      const updateIP = async () => {
+        fetch("https://ipv4.ident.me")
+          .then((r) => r.text())
+          .then((r) => {
+            room = r;
+            room_name.innerText = room;
+            socket?.emit("room", room);
+            room_name.innerText = JSON.stringify(r);
+          })
+          .catch((error) => room_name.innerText = error);
       };
+      setInterval(updateIP, 60000);
+      await updateIP();
 
-      (async () => {
-        const room_name = document.getElementById("room_name");
-        const bug_name = document.getElementById("bug_name");
-        const messages = document.getElementById("messages");
-        const form = document.getElementById("form");
-        const input = document.getElementById("message");
+      const socket = io();
+      socket.on("connect", function () {
+        socket.emit("room", room);
+      });
 
-        // assign default name
-        const default_names = [
-          "🦗",
-          "🐝",
-          "🦗",
-          "🐛",
-          "🐌",
-          "🐞",
-          "🐜",
-          "🦟",
-          "🦋",
-          "🦎",
-          "🐀",
-          "🐁",
-        ];
-        if (localStorage.getItem("bug_name")) {
-          bug_name.value = localStorage.getItem("bug_name");
-        } else {
-          const default_name =
-            default_names[Math.floor(Math.random() * default_names.length)];
-          bug_name.value = default_name;
-          localStorage.setItem("bug_name", default_name);
-        }
-        bug_name.addEventListener("keyup", (e) =>
-          localStorage.setItem("bug_name", e.target.value)
-        );
-
-        // get current IP
-        let room;
-        const updateIP = async () => {
-          fetch("https://ipv4.ident.me")
-            .then((r) => r.text())
-            .then((r) => {
-              room = r;
-              room_name.innerText = room;
-              socket?.emit("room", room);
-              alert(JSON.stringify(r));
-            })
-            .catch((error) => alert(error));
-        };
-        setInterval(updateIP, 60000);
-        await updateIP();
-
-        const socket = io();
-        socket.on("connect", function () {
-          socket.emit("room", room);
-        });
-
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          if (input.value) {
-            socket.emit("bzzz", {
-              bug_name: bug_name.value,
-              msg: input.value,
-              date: Date.now(),
-            });
-            _msg = `<li class="me">
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit("bzzz", {
+            bug_name: bug_name.value,
+            msg: input.value,
+            date: Date.now(),
+          });
+          _msg = `<li class="me">
           <span class="msg-contents"> ${input.value} </span>
-        </li>`;
-            messages.innerHTML += urlify(_msg);
-            window.scrollTo(0, document.body.scrollHeight);
-            input.value = "";
-          }
-        });
-
-        socket.on(room, function ({ bug_name, msg }) {
-          _msg = `<li>
-          <span class="msg-author"> ${bug_name} </span>
-          <span class="msg-contents"> ${msg} </span>
         </li>`;
           messages.innerHTML += urlify(_msg);
           window.scrollTo(0, document.body.scrollHeight);
-          if (!document.visibilityState === "visible") {
-            notify(bug_name + ": " + msg);
-          }
-        });
+          input.value = "";
+        }
+      });
 
-        function notify(msg) {
-          if (Notification?.permission === "granted") {
-            var notification = new Notification(msg);
-          } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(function (permission) {
-              if (permission === "granted") {
-                var notification = new Notification(msg);
-              }
-            });
-          }
+      socket.on(room, function ({ bug_name, msg }) {
+        _msg = `<li>
+          <span class="msg-author"> ${bug_name} </span>
+          <span class="msg-contents"> ${msg} </span>
+        </li>`;
+        messages.innerHTML += urlify(_msg);
+        window.scrollTo(0, document.body.scrollHeight);
+        if (!document.visibilityState === "visible") {
+          notify(bug_name + ": " + msg);
         }
-        function welcomeNotification() {
-          if (
-            Notification?.permission !== "granted" &&
-            Notification?.permission !== "denied"
-          ) {
-            Notification.requestPermission().then(function (permission) {
-              if (permission === "granted") {
-                var notification = new Notification("welcome 🦋");
-              }
-            });
-          }
-          console.log(
-            "welcome to bug.chat - source code > https://github.com/basiclaser/ipv4-chat"
-          );
+      });
+
+      function notify(msg) {
+        if (Notification?.permission === "granted") {
+          var notification = new Notification(msg);
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+              var notification = new Notification(msg);
+            }
+          });
         }
-        welcomeNotification();
-      })();
-    </script>
-  </body>
+      }
+      function welcomeNotification() {
+        if (
+          Notification?.permission !== "granted" &&
+          Notification?.permission !== "denied"
+        ) {
+          Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+              var notification = new Notification("welcome 🦋");
+            }
+          });
+        }
+        console.log(
+          "welcome to bug.chat - source code > https://github.com/basiclaser/ipv4-chat"
+        );
+      }
+      welcomeNotification();
+    })();
+  </script>
+</body>
+
 </html>

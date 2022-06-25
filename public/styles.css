@@ -2,11 +2,14 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
+  font-weight: 200;
   background-color: #f8f8ff;
 }
+
 input[type="text"] {
   background-color: #f8f8ff;
 }
+
 nav {
   display: flex;
   justify-content: center;
@@ -16,6 +19,7 @@ nav {
   width: 100vw;
   z-index: 0;
 }
+
 nav div {
   margin: 0;
   border-bottom-left-radius: 100% 200%;
@@ -25,13 +29,16 @@ nav div {
   padding-bottom: 60px;
   font-weight: 200;
 }
+
 .gray {
   color: rgb(134, 134, 134);
 }
+
 .b1 {
   font-size: 1.9em;
   font-weight: 200;
 }
+
 .b2 {
   font-size: 1.5em;
   font-weight: 300;
@@ -58,6 +65,7 @@ form {
     height: 8rem;
     flex-direction: column;
   }
+
   #bug_name {
     flex-grow: 1;
   }
@@ -103,7 +111,7 @@ form button {
   padding: 0;
 }
 
-#messages > li {
+#messages>li {
   opacity: 0.8;
   filter: blur(1);
   padding: 0.5rem 1rem;
@@ -115,7 +123,7 @@ form button {
   z-index: 1;
 }
 
-#messages > li.me {
+#messages>li.me {
   align-self: flex-end;
   background: #fffe00;
 }
