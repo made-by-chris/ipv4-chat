@@ -22,6 +22,7 @@ io.on("connection", (client) => {
   });
   console.log(`connection from ${rm}`);
   client.on("bzzz", (msg) => {
+    console.log(`message received ${msg} in room ${client.room}`);
     client.broadcast.emit(client.room, { ...msg });
   });
 });

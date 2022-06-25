@@ -78,7 +78,7 @@
     // get current IP
     let room;
     let socket;
-    const updateIP = async () => {
+    const updateIP = () => {
       try {
         fetch("https://ipv4.ident.me")
           .then((r) => r.text())
