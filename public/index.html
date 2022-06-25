@@ -78,15 +78,19 @@
       // get current IP
       let room;
       const updateIP = async () => {
-        fetch("https://ipv4.ident.me")
-          .then((r) => r.text())
-          .then((r) => {
-            room = r;
-            room_name.innerText = room;
-            socket?.emit("room", room);
-            room_name.innerText = JSON.stringify(r);
-          })
-          .catch((error) => room_name.innerText = error);
+        try {
+          fetch("https://ipv4.ident.me")
+            .then((r) => r.text())
+            .then((r) => {
+              room = r;
+              room_name.innerText = room;
+              socket?.emit("room", room);
+              room_name.innerText = JSON.stringify(r);
+            })
+            .catch((error) => room_name.innerText = error);
+        } catch (error) {
+          room_name.innerText = error
+        }
       };
       setInterval(updateIP, 60000);
       await updateIP();
