@@ -20,7 +20,8 @@
       </p>
       <span class="gray">
         (no sign up - no logs)<br />
-        your wifi room: <span id="room_name">01.234.567.89</span>
+        (bug.chat only works for routers<br /> with ipv4 addresses)<br />
+        your router ip: <span id="room_name">01.234.567.89</span>
         <br />
       </span>
     </div>
@@ -87,7 +88,7 @@
               room = r;
               room_name.innerText = room;
               socket?.emit("room", room);
-              room_name.innerText = JSON.stringify(r);
+              room_name.innerText = r
               res()
             })
             .catch((error) => { room_name.innerText = error; res() });
