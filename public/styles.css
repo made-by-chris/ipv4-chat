@@ -60,8 +60,6 @@ form {
 
 @media (max-width: 728px) {
   form {
-    border-radius: 0;
-    margin: 0;
     height: 8rem;
     flex-direction: column;
   }
